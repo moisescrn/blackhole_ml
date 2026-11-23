@@ -1,0 +1,52 @@
+[project]
+name = "blackhole-ml"
+license = "MIT"
+license-files = ["LICENSE"]
+version = "0.1.0"
+description = "Training of ML to infer the Kerr-Newmann-NUT black hole parameters from a given shadow"
+readme = "README.md"
+authors = [
+    { name = "moisescrn", email = "moisescarbofuster@hotmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "emcee>=3.1.6",
+    "matplotlib>=3.11.2",
+    "numba>=0.68.1",
+    "numpy>=2.5.5",
+    "pytest>=9.2.0",
+    "scipy>=1.18.1",
+    "torch>=2.15.0",
+]
+
+[project.scripts]
+blackhole-ml = "blackhole_ml:main"
+
+[build-system]
+requires = ["uv_build>=0.13.9,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.6",
+]
+
+# I have an integrated AMD GPU, so can only use pytorch on CPU
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+# Ruff set up
+[tool.ruff]
+line-length = 85
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"

@@ -39,6 +39,8 @@ blackhole-ml/
 - Code like an expert in datascience, machine learning and astrophysics
 - Comments should be short, but precise. Maximally one comment at the beginning of a function and/or code paragraph (and only if needed). Just a short description of what it does. Do not write to which spec, FR, NFR or task it is associated.
 - Naming conventions: Camelcase for functions, Pascalcase for classes, Hungarian notation for variables
+- When a function is defined, its argument's type shall be specified, and its output type as well (with ->) (Example: f(x: int) -> int: )
+- If a function will be used several times (at least three), it shall be compiled using the decorators defined in `numba`, like @jit or @njit
 - Ruff will be used for linting, so write code in such a way, that it respects the given rules in `pyproject.toml`, so that ruff does not have to change a lot of things
 - Everything should be in English
 

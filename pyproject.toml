@@ -31,6 +31,8 @@ module-name = "knn_shadow"
 
 [dependency-groups]
 dev = [
+    "ipykernel>=7.4.0",
+    "jupyterlab>=4.6.6",
     "ruff>=0.17.6",
 ]
 

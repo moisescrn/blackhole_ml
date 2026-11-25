@@ -46,7 +46,7 @@ blackhole-ml/
 
 ## Domain Rules / Known Pitfalls
 - If there is a loss of understanding about the phyiscs, read again `docs/` to get the technical background.
-- To get an overall picture of the project in general read `PROJECT_DESCRIPTION.md`
+- If it is not enough to get an overall picture of the project read `PROJECT_DESCRIPTION.md`, that it contains only some personal notes, and is not followed line by line. So it can help to get an idea of the project, but is not authorative.
 
 ## Workflow
 - Before touching or creating any file, always plan and wait for the user's approval

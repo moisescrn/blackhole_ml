@@ -9,19 +9,22 @@ The contour of that black region is a one-dimensional line and is called *shadow
 
 | Variable name | Physical meaning | Comment | 
 |---|---|----|
-| $m$ | mass | |
+| $m$ | mass | $m>0$ |
 | $Q$ | electric charge | |
 | $a$ | spin | $a^2<=m^2 + l^2 - Q^2$ |
 | $l$ | NUT-charge |  |
 | $C$ | Manko-Ruiz parameter| Plays a physical role only if $l \neq 0$, it does not appear on the parametrization of the shadow, so it is not important for our purposes. |
 
-Due to the characteristic of the Manko-Ruiz parameter, we assume for training the model that the black hole depends only on four parameters.
+Due to the characteristic of the Manko-Ruiz parameter, we assume for training the model that the black hole depends only on four parameters. 
+The only parameter that has a restricted range (apart from $m > 0$) is the spin $a$, at least mathematically. The maximal spin is $a_{max} = \sqrt{m^2 + l^2 - Q^2}$. Nevertheless there is a numerical issue when giving the parametrization of the shadow for a black hole with spin $a = 0$ or with $a = a_{max}$, so when simulating that scenarios we just take value that are very near to them, like $a = \frac{1}{1000} a_{max}$ or $a = \frac{999}{1000} a_{max}$. Note that $a$ can be positive and negative, this just represents the direction of spin, which has a consequence on the shadow.
 
 ## Conventions
 For simplicity the gravitational constants and speed of light are set to unity, $G = 1 = c$. This has a consequence that the many variables are measured as units of the mass $m$.
 For example $a = 2m$, $Q = m/3$, ...
 
-As first run, the observer is in the fixed location $r_O = 5m$, $\vartheta_0 = \pi/2$. (Where $\vartheta_0$ is the angle between the observer and the rotational axis of the blackhole, so the observer lies on the equatorial plane of the blackhole). In the future, a model will be trained to be able to deduce the observers position from the shadow. There is also the possibility to set the observer in motion, and its direction and velocity change the shadow.
+As first run, the observer is in the fixed location $r_O = 5m$, $\vartheta_O = \pi/2$. (Where $\vartheta_O$ is the angle between the observer and the rotational axis of the blackhole, so the observer lies on the equatorial plane of the blackhole).
+
+(( In the future, a model will be trained to be able to deduce the observers position from the shadow. There is also the possibility to set the observer in motion, and its direction and velocity change the shadow, but for the moment we do not care about that. ))
 
 ## Help functions
 To shorten notation and improve visibility we introduce the following functions for the metric.

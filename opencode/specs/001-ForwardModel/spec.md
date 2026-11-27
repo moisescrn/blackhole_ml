@@ -74,7 +74,7 @@ The objective is a coherent, verifiable unit that turns parameters into sampled 
 - NFR-3 (Determinism). WHEN the same valid parameter set is provided, THE SYSTEM shall return bit-identical sampled points; the function is pure (no global state, no hidden randomness).
 - NFR-4 (Inner path efficiency). THE SYSTEM shall evaluate the boundary over the `N_r` sampled radii using vectorized array operations, with no Python `for` loop over points in the inner path.
 - NFR-5 (Batch efficiency). THE SYSTEM shall compute a batch of parameter sets without a Python `for` loop over parameter sets.
-- NFR-6 (Benchmark before acceleration). THE SYSTEM shall be benchmarked and profiled at `N_r = 128`, batch size `B = 100`, over `R = 10` repetitions, reporting the median wall-clock time per single call and per batch. JIT acceleration (e.g. Numba) shall be introduced only if profiling shows the boundary evaluation is the dominant cost (≥ 50% of runtime) AND the measured JIT speedup is ≥ 2×.
+- NFR-6 (Benchmark before acceleration). THE SYSTEM shall be benchmarked and profiled at `N_r = 128`, batch size `B = 100`, over `R = 10` repetitions, reporting the median wall-clock time per single call and per batch. JIT acceleration (e.g. Numba) shall be applied only to small, frequently-called helper functions whose one-time compilation cost is outweighed by the repeated call-time gains; complex functions with long compilation times that are called infrequently shall not be JIT-compiled.
 
 ## Edge cases
 
@@ -105,7 +105,7 @@ The objective is a coherent, verifiable unit that turns parameters into sampled 
 - The angles and plane points agree with the analytic formulas (FR-6, FR-8) to the absolute tolerances stated in NFR-1b.
 - Schwarzschild finite-distance anchor: for `m = 1`, `Q = 0`, `l = 0`, `a = a_max/1000` (`a → 0`) at `r_O = 5`, the shadow is a circle with `sin θ = 12·√45/100 ≈ 0.804984` (equivalently `θ ≈ 0.93565 rad`, plane radius `2·tan(θ/2) ≈ 1.0105`), checked with tolerance `1e-3` on `sin θ` (the deviation is `O(a)`); each point's plane radius is within `1e-3` of `1.0105`.
 - A batch of `B` parameter sets (FR-10) returns an array of shape `(B, 2·N_r − 2, 5)` that matches the per-set results of individual evaluation, with no per-parameter-set Python loop (NFR-5).
-- The benchmark reports the median timing per call and per batch at `N_r = 128`, `B = 100`, `R = 10`, and JIT acceleration is introduced only with a measured speedup (NFR-6).
+- The benchmark reports the median timing per call and per batch at `N_r = 128`, `B = 100`, `R = 10` (NFR-6); JIT is applied only to the small, frequently-called helper functions, and the complex functions are left uncompiled.
 - Invalid inputs behave as specified: `m ≤ 0`, invalid spin, `a = 0` or `|a| = a_max` exactly, `Δ(r_O) ≤ 0`, and `N_r < 3` raise a `ValueError` (FR-1, FR-2, FR-5); a failed root solve raises a `RuntimeError` (FR-4).
 - Determinism holds: the same valid input yields bit-identical output (NFR-3); no new dependency or package is introduced (NFR-2).
 - The behavior described by FR-1 through FR-10 is covered by automated tests, and `uv run pytest` passes (constitution principle 3).

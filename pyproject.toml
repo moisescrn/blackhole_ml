@@ -49,6 +49,8 @@ explicit = true
 [tool.ruff]
 line-length = 85
 target-version = "py312"
+extend-exclude = ["*.ipynb"]
+force-exclude = true
 
 [tool.ruff.lint]
 select = ["B", "E", "F", "I", "UP"]

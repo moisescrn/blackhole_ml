@@ -417,6 +417,16 @@ def testSolvePhotonRadiiBatchMatchesSingle() -> None:
         assert fMinus[i] == pytest.approx(fRefMinus, rel=1e-9, abs=1e-12)
 
 
+def testSolvePhotonRadiiBatchAcceptsNearExtremalRoots() -> None:
+    # Near-extremal spin: 0 < delta(r_p+) < 1, still an admissible root.
+    arrParams = np.array([[1.0, 0.3, 0.9, 0.4]], dtype=np.float64)
+    fPlus, fMinus = solvePhotonRadiiBatch(arrParams)
+    fRefPlus, fRefMinus = solvePhotonRadii(1.0, 0.3, 0.9, 0.4)
+    assert float(delta(fPlus, 1.0, 0.3, 0.9, 0.4)[0]) < 1.0
+    assert fPlus[0] == pytest.approx(fRefPlus, rel=1e-9, abs=1e-12)
+    assert fMinus[0] == pytest.approx(fRefMinus, rel=1e-9, abs=1e-12)
+
+
 def testShadowBoundaryBatchShape() -> None:
     arrParams = np.array(BATCH_SETS, dtype=np.float64)
     fN = 16

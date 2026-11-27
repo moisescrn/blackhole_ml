@@ -3,6 +3,7 @@
 # Photon region, shadow boundary, stereographic projection
 
 import numpy as np
+from numba import njit
 from numpy.typing import NDArray
 from scipy import optimize
 
@@ -24,12 +25,13 @@ ScalarOrArray = float | NDArray[np.float64]
 
 
 # Shadow parametrization
+@njit
 def sinTheta(
     r: NDArray[np.float64] | float,
     m: ScalarOrArray,
     Q: ScalarOrArray,
     a: ScalarOrArray,
-    l: ScalarOrArray, # noqa: E741
+    l: ScalarOrArray,  # noqa: E741
 ) -> NDArray[np.float64]:
     """Sine of the celestial polar angle, raw value (no clamping)."""
     rArr = np.asarray(r, dtype=np.float64)
@@ -40,27 +42,33 @@ def sinTheta(
     fDenom = deltaPrime(rArr, m) * (fRO**2 - rArr**2) + 4.0 * rArr * fDeltaR
     return fNumer / fDenom
 
+
+@njit
 def sinPsi(
     r: NDArray[np.float64] | float,
     m: ScalarOrArray,
     Q: ScalarOrArray,
     a: ScalarOrArray,
-    l: ScalarOrArray, # noqa: E741
+    l: ScalarOrArray,  # noqa: E741
 ) -> NDArray[np.float64]:
     """Sine of the celestial azimuth, raw value (no clamping)."""
     rArr = np.asarray(r, dtype=np.float64)
     fDeltaR = delta(rArr, m, Q, a, l)
-    fNumer = deltaPrime(rArr, m) * (rArr**2 + (l+a*fCosThO**2)**2) - 4.0*rArr*fDeltaR
+    fNumer = (
+        deltaPrime(rArr, m) * (rArr**2 + (l + a * fCosThO**2) ** 2)
+        - 4.0 * rArr * fDeltaR
+    )
     fDenom = 4.0 * rArr * a * np.sqrt(fDeltaR) * fSinThO
     return fNumer / fDenom
 
 
+@njit
 def photonResidual(
     r: NDArray[np.float64] | float,
     m: ScalarOrArray,
     Q: ScalarOrArray,
     a: ScalarOrArray,
-    l: ScalarOrArray, # noqa: E741
+    l: ScalarOrArray,  # noqa: E741
     sign: float,
 ) -> NDArray[np.float64]:
     """Residual of the photon-orbit equation; sign=-1 for r_p+, sign=+1 for r_p-."""
@@ -78,7 +86,7 @@ def solvePhotonRadii(
     m: float,
     Q: float,
     a: float,
-    l: float, # noqa: E741
+    l: float,  # noqa: E741
 ) -> tuple[float, float]:
     """Solve both photon-orbit radii, returning (r_p+, r_p-) labeled by equation."""
     fRPlus = outerHorizon(m, Q, a, l)
@@ -105,7 +113,7 @@ def solvePhotonRadii(
                     fHi,
                     xtol=1e-14,
                     rtol=1e-15,
-                ) # find root (in the variable fR) in the interval [fLo, fHi]
+                )  # find root (in the variable fR) in the interval [fLo, fHi]
             )
         except ValueError as fErr:
             raise RuntimeError(
@@ -166,10 +174,11 @@ def solvePhotonRadiiBatch(
             fLoCur = np.where(fMidVal > 0.0, fMid, fLoCur)
             fHiCur = np.where(fMidVal <= 0.0, fMid, fHiCur)
         fRoot = 0.5 * (fLoCur + fHiCur)
+        # Admissible: finite, positive and outside the horizon (delta >= 0).
         fBad = ~(
             np.isfinite(fRoot)
             & (fRoot > 0.0)
-            & (delta(fRoot, mArr, QArr, aArr, lArr) >= 1.0)
+            & (delta(fRoot, mArr, QArr, aArr, lArr) >= 0.0)
         )
         if np.any(fBad):
             raise RuntimeError(
